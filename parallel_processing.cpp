@@ -1,54 +1,62 @@
 #include <iostream>
-#include <algorithm>
 #include <vector>
+#include <algorithm>
+
 using namespace std;
 typedef long long int ll;
-#define MOD 1000000007
-#define MAX 1000000000000000000
 #define ln "\n"
-struct job
-{
-    ll a,b;
+
+struct job {
+    ll id;       
+    ll next_free; 
 };
-void siftup(job k[],ll i)
-{
-    ll max=i,p=(i-1)/2;
-    if(p>=0 && (k[p].b>k[max].b || (k[p].b==k[max].b and k[p].a>k[max].a))) max=p;
-    if(max-i)
-    {
-        swap(k[p],k[i]);
-        siftup(k,p);
+
+void CardSiftdown(vector<job>& k, ll n, ll i) {
+    ll min_idx = i;
+    ll l = 2 * i + 1;
+    ll r = 2 * i + 2;
+
+    if (l < n && (k[l].next_free < k[min_idx].next_free || 
+                 (k[l].next_free == k[min_idx].next_free && k[l].id < k[min_idx].id))) {
+        min_idx = l;
+    }
+    if (r < n && (k[r].next_free < k[min_idx].next_free || 
+                 (k[r].next_free == k[min_idx].next_free && k[r].id < k[min_idx].id))) {
+        min_idx = r;
+    }
+    if (min_idx != i) {
+        swap(k[i], k[min_idx]);
+        CardSiftdown(k, n, min_idx);
     }
 }
-void siftdown(job k[],ll n,ll i)
-{
-    ll min=i,l=2*i+1,r=l+1;
-    if(l<n && (k[l].b<k[min].b || (k[l].b==k[min].b && k[l].a<k[min].a))) min=l;
-    if(r<n && (k[r].b<k[min].b || (k[r].b==k[min].b && k[r].a<k[min].a))) min=r;
-    if(min-i)
-    {
-        swap(k[min],k[i]);
-        siftdown(k,n,min);
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+
+    ll n, m;
+    if (!(cin >> n >> m)) return 0;
+
+    vector<ll> jobs(m);
+    for (ll i = 0; i < m; i++) {
+        cin >> jobs[i];
     }
-}
-int main()
-{
-    ll n,m,i,a[100005];
-	cin>>n>>m;
-	for(i=0;i<m;i++) cin>>a[i];
-	job k[100005];
-	for(i=0;i<n;i++)
-	{
-	    k[i].a=i;
-	    k[i].b=0;
-	}
-	for(i=0;i<m;i++)
-	{
-	    cout<<k[0].a<<" "<<k[0].b<<ln;
-	    swap(k[0],k[n-1]);
-	    k[n-1].b+=a[i];
-	    siftdown(k,n-1,0);
-	    siftup(k,n-1);
-	}
-	return 0;
+
+   
+    vector<job> threads(n);
+    for (ll i = 0; i < n; i++) {
+        threads[i].id = i;
+        threads[i].next_free = 0;
+    }
+
+ 
+    for (ll i = 0; i < m; i++) {
+        cout << threads[0].id << " " << threads[0].next_free << ln;
+
+      
+        threads[0].next_free += jobs[i];
+        CardSiftdown(threads, n, 0);
+    }
+
+    return 0;
 }
