@@ -50,7 +50,6 @@ public:
     Answer check(size_t len) {
         if (len == 0) return {0, 0, 0};
         
-        // Custom hash combine for pair tracking in unordered_map
         struct pair_hash {
             size_t operator()(const pair<ll, ll>& p) const {
                 return p.first ^ (p.second << 1);
