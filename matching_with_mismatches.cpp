@@ -55,7 +55,6 @@ public:
             size_t p_idx = 0;
 
             while (p_idx < p.size()) {
-                // Step 1: Binary Search for the next mismatch location
                 size_t low = 1, high = p.size() - p_idx, match_len = 0;
                 while (low <= high) {
                     size_t mid = low + (high - low) / 2;
@@ -71,7 +70,7 @@ public:
                 if (p_idx < p.size()) {
                     mismatches++;
                     if (mismatches > k) break;
-                    p_idx++; // Skip past the discovered mismatch char
+                    p_idx++;
                 }
             }
 
