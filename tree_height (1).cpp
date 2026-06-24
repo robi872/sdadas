@@ -9,7 +9,7 @@ struct tree
 };
 int bfs(tree t[], int root)
 {
-    int max_height = 1, s, i; // Use max_height instead of l
+    int max_height = 1, s, i; 
     queue <int> q;
     q.push(root);
     while(!q.empty())
@@ -19,7 +19,7 @@ int bfs(tree t[], int root)
         for(i = 0; i < t[s].ch.size(); i++)
         {
             t[t[s].ch[i]].lvl = t[s].lvl + 1;
-            max_height = max(max_height, t[t[s].ch[i]].lvl); // Track maximum level
+            max_height = max(max_height, t[t[s].ch[i]].lvl);
             q.push(t[s].ch[i]);
         }
     }
