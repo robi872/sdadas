@@ -7,22 +7,23 @@ struct tree
     vector <int> ch;
     int lvl;
 };
-int bfs(tree t[],int root)
+int bfs(tree t[], int root)
 {
-    int l=1,s,i;
+    int max_height = 1, s, i; // Use max_height instead of l
     queue <int> q;
     q.push(root);
     while(!q.empty())
     {
-        s=q.front();
+        s = q.front();
         q.pop();
-        for(i=0;i<t[s].ch.size();i++)
+        for(i = 0; i < t[s].ch.size(); i++)
         {
-            t[t[s].ch[i]].lvl=l=t[s].lvl+1;
+            t[t[s].ch[i]].lvl = t[s].lvl + 1;
+            max_height = max(max_height, t[t[s].ch[i]].lvl); // Track maximum level
             q.push(t[s].ch[i]);
         }
     }
-    return l;
+    return max_height;
 }
 int main() 
 {
