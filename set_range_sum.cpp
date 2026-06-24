@@ -1,12 +1,12 @@
 #include <cstdio>
+#include <iostream>
+
+using namespace std;
 
 // Splay tree implementation
 
-// Vertex of a splay tree
 struct Vertex {
   int key;
-  // Sum of all the keys in the subtree - remember to update
-  // it after each operation that changes the tree.
   long long sum;
   Vertex* left;
   Vertex* right;
@@ -56,22 +56,17 @@ void small_rotation(Vertex* v) {
 
 void big_rotation(Vertex* v) {
   if (v->parent->left == v && v->parent->parent->left == v->parent) {
-    // Zig-zig
     small_rotation(v->parent);
     small_rotation(v);
   } else if (v->parent->right == v && v->parent->parent->right == v->parent) {
-    // Zig-zig
     small_rotation(v->parent);
     small_rotation(v);
   } else {
-    // Zig-zag
     small_rotation(v);
     small_rotation(v);
   }  
 }
 
-// Makes splay of the given vertex and makes
-// it the new root.
 void splay(Vertex*& root, Vertex* v) {
   if (v == NULL) return;
   while (v->parent != NULL) {
@@ -84,13 +79,6 @@ void splay(Vertex*& root, Vertex* v) {
   root = v;
 }
 
-// Searches for the given key in the tree with the given root
-// and calls splay for the deepest visited node after that.
-// If found, returns a pointer to the node with the given key.
-// Otherwise, returns a pointer to the node with the smallest
-// bigger key (next value in the order).
-// If the key is bigger than all keys in the tree, 
-// returns NULL.
 Vertex* find(Vertex*& root, int key) {
   Vertex* v = root;
   Vertex* last = root;
@@ -142,8 +130,6 @@ Vertex* merge(Vertex* left, Vertex* right) {
   return right;
 }
 
-// Code that uses splay tree to solve the problem
-
 Vertex* root = NULL;
 
 void insert(int x) {
@@ -157,15 +143,26 @@ void insert(int x) {
   root = merge(merge(left, new_vertex), right);
 }
 
-void erase(int x) {                   
-  // Implement erase yourself
-
+bool find(int x) {  
+  Vertex* res = find(root, x);
+  if (res != NULL && res->key == x) {
+    return true;
+  }
+  return false;
 }
 
-bool find(int x) {  
-  // Implement find yourself
-
-  return false;
+void erase(int x) {                   
+  Vertex* next_node = find(root, x);
+  if (next_node == NULL || next_node->key != x) {
+    return; // Element not found, nothing to do
+  }
+  splay(root, next_node);
+  Vertex* left_tree = root->left;
+  Vertex* right_tree = root->right;
+  if (left_tree != NULL) left_tree->parent = NULL;
+  if (right_tree != NULL) right_tree->parent = NULL;
+  delete root;
+  root = merge(left_tree, right_tree);
 }
 
 long long sum(int from, int to) {
@@ -175,8 +172,10 @@ long long sum(int from, int to) {
   split(root, from, left, middle);
   split(middle, to + 1, middle, right);
   long long ans = 0;
-  // Complete the implementation of sum
-  
+  if (middle != NULL) {
+    ans = middle->sum;
+  }
+  root = merge(merge(left, middle), right);
   return ans;  
 }
 
@@ -184,11 +183,11 @@ const int MODULO = 1000000001;
 
 int main(){
   int n;
-  scanf("%d", &n);
-  int last_sum_result = 0;
+  if (scanf("%d", &n) != 1) return 0;
+  long long last_sum_result = 0;
   for (int i = 0; i < n; i++) {
     char buffer[10];
-    scanf("%s", buffer);
+    if (scanf("%s", buffer) != 1) break;
     char type = buffer[0];
     switch (type) {
       case '+' : {
@@ -211,7 +210,7 @@ int main(){
         scanf("%d %d", &l, &r);
         long long res = sum((l + last_sum_result) % MODULO, (r + last_sum_result) % MODULO);
         printf("%lld\n", res);
-        last_sum_result = int(res % MODULO);
+        last_sum_result = res % MODULO;
       }
     }
   }
